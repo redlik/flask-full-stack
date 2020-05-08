@@ -1,5 +1,7 @@
-from application import app
-from flask import render_template
+from application import app, db
+from flask import render_template, request
+from application.models import Users, Course, Enrollment
+from application.forms import LoginForm, RegisterForm
 
 
 @app.route("/")
@@ -14,11 +16,28 @@ def courses():
     return render_template("courses.html", courseData = courseData, courses = True)
 
 
-@app.route("/login")
+@app.route("/login", methods=['GET', 'POST'])
 def login():
-    return render_template("login.html", login=True, log = True)
+    form = LoginForm()
+    return render_template("login.html", login=True, log = True, form = form, title="Login please")
 
 
 @app.route("/register")
 def register():
     return render_template("register.html", login=True, register = True)
+
+@app.route("/enrollment")
+def enrollment():
+    id = request.args.get('courseID')
+    title = request.args.get('title')
+    term = request.args.get('term')
+    return render_template("enrollment.html",  data = {"id":id, "title": title, "term": term})
+
+
+
+@app.route("/user")
+def user():
+    # Users(user_id=1, first_name="John", last_name="Jones", email="john@jones.com", password="1234abcd").save()
+    # Users(user_id=2, first_name="Mary", last_name="Smith", email="mary@smith.com", password="abcd1234").save()
+    users = Users.objects.all()
+    return render_template("user.html", users=users)
